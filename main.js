@@ -3,7 +3,7 @@
 // Import Firebase client modules needed for real-time listeners on the front-end
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, addDoc, setDoc, onSnapshot, collection, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, addDoc, setDoc, onSnapshot, collection, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 // This is a minimal, self-contained application.
 // In a real-world scenario, the API calls would be to a backend server.
@@ -29,6 +29,7 @@ const showMessage = (text) => {
     const messageText = document.getElementById('message-text');
     messageText.textContent = text;
     messageBox.classList.remove('hidden');
+    setTimeout(() => messageBox.classList.add('hidden'), 5000);
 };
 
 // DOM elements
@@ -58,11 +59,13 @@ const modalProductName = document.getElementById('modal-product-name');
 const modalProductDescription = document.getElementById('modal-product-description');
 const modalProductPrice = document.getElementById('modal-product-price');
 const modalProductOwner = document.getElementById('modal-product-owner');
+const modalBuyButton = document.getElementById('modal-buy-button');
 const chatMessages = document.getElementById('chat-messages');
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const loanHistory = document.getElementById('loan-history');
-const modalBuyButton = document.getElementById('modal-buy-button');
+const buyerOrdersList = document.getElementById('buyer-orders-list');
+const farmerOrdersList = document.getElementById('farmer-orders-list');
 
 // A simple utility for exponential backoff retry.
 const withRetry = async (fn, retries = 5, delay = 1000) => {
@@ -109,6 +112,7 @@ loginForm.addEventListener('submit', async (e) => {
 
     try {
         await withRetry(() => signInWithEmailAndPassword(auth, email, password));
+        showMessage("Login successful!");
     } catch (error) {
         console.error("Login failed:", error);
         showMessage("Login failed. Please check your credentials.");
@@ -143,6 +147,7 @@ registerForm.addEventListener('submit', async (e) => {
 // Handle logout
 logoutButton.addEventListener('click', async () => {
     await signOut(auth);
+    showMessage("You have been logged out.");
 });
 
 // Handle product listing form submission (Farmer feature)
@@ -223,7 +228,7 @@ suggestPriceButton.addEventListener('click', async () => {
         }
     } catch (error) {
         console.error("Error from Gemini API:", error);
-        showMessage(error.message);
+        showMessage("Failed to get price suggestion.");
     } finally {
         priceLoadingIndicator.classList.add('hidden');
         suggestPriceButton.disabled = false;
@@ -305,6 +310,145 @@ chatForm.addEventListener('submit', async (e) => {
     }
 });
 
+// Handle simulated purchase by buyer
+const handleBuyProduct = async (product) => {
+    if (!userId) {
+        showMessage("Please log in to make a purchase.");
+        return;
+    }
+
+    try {
+        const ordersCollectionRef = collection(db, `artifacts/${appId}/public/data/orders`);
+        await addDoc(ordersCollectionRef, {
+            productId: product.id,
+            productName: product.name,
+            productPrice: product.price,
+            farmerId: product.ownerId,
+            buyerId: userId,
+            status: 'Pending', // Initial status
+            createdAt: new Date().toISOString()
+        });
+        showMessage(`Order for ${product.name} placed successfully!`);
+        productModal.classList.add('hidden');
+    } catch (error) {
+        console.error("Error placing order:", error);
+        showMessage("Failed to place order. Please try again.");
+    }
+};
+
+// Handle marking an order as shipped by the farmer
+const handleShippedOrder = async (orderId) => {
+    try {
+        const orderDocRef = doc(db, `artifacts/${appId}/public/data/orders`, orderId);
+        await updateDoc(orderDocRef, {
+            status: 'Shipped',
+            shippedAt: new Date().toISOString()
+        });
+        showMessage("Order marked as shipped!");
+    } catch (error) {
+        console.error("Error updating order status:", error);
+        showMessage("Failed to update order status.");
+    }
+};
+
+// Handle marking an order as delivered by the farmer
+const handleDeliveredOrder = async (orderId) => {
+    try {
+        const orderDocRef = doc(db, `artifacts/${appId}/public/data/orders`, orderId);
+        await updateDoc(orderDocRef, {
+            status: 'Delivered',
+            deliveredAt: new Date().toISOString()
+        });
+        showMessage("Order marked as delivered!");
+    } catch (error) {
+        console.error("Error updating order status:", error);
+        showMessage("Failed to update order status.");
+    }
+};
+
+// Render Functions
+const renderProduct = (product, container, isFarmer) => {
+    const productItem = document.createElement('div');
+    productItem.classList.add('bg-white', 'p-4', 'rounded-xl', 'shadow-md', 'mb-4', 'cursor-pointer', 'hover:shadow-lg', 'transition-shadow');
+    productItem.innerHTML = `
+        <h3 class="text-xl font-bold text-gray-800 mb-2">${product.name}</h3>
+        <p class="text-gray-600 mb-2">${product.description}</p>
+        <p class="text-green-600 font-semibold text-lg mb-2">RWF ${product.price.toFixed(2)}</p>
+        <p class="text-sm text-gray-400">Listed by: <span class="font-mono">${product.ownerId}</span></p>
+    `;
+    
+    productItem.addEventListener('click', () => showProductModal(product));
+    container.appendChild(productItem);
+};
+
+const renderOrders = (orders, container, isFarmerView) => {
+    container.innerHTML = '';
+    if (orders.length === 0) {
+        container.innerHTML = '<p class="text-gray-500">No orders found.</p>';
+        return;
+    }
+
+    orders.forEach(order => {
+        const orderItem = document.createElement('div');
+        orderItem.classList.add('bg-gray-100', 'p-4', 'rounded-xl', 'shadow-sm', 'border', 'border-gray-200');
+
+        let statusClass = '';
+        switch (order.status) {
+            case 'Pending':
+                statusClass = 'status-pending';
+                break;
+            case 'Confirmed':
+                statusClass = 'status-confirmed';
+                break;
+            case 'Shipped':
+                statusClass = 'status-shipped';
+                break;
+            case 'Delivered':
+                statusClass = 'status-delivered';
+                break;
+        }
+
+        orderItem.innerHTML = `
+            <div class="flex items-center justify-between mb-2">
+                <h4 class="font-bold text-gray-800">${order.productName}</h4>
+                <span class="status-badge ${statusClass}">${order.status}</span>
+            </div>
+            <p class="text-sm text-gray-600">Buyer: <span class="font-mono">${order.buyerId}</span></p>
+            <p class="text-sm text-gray-600">Total Price: RWF ${order.productPrice.toFixed(2)}</p>
+            <p class="text-xs text-gray-400">Order ID: <span class="font-mono">${order.id}</span></p>
+            ${isFarmerView && order.status === 'Pending' ? `<div class="mt-4 flex space-x-2">
+                <button class="mark-shipped-btn bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600" data-order-id="${order.id}">Mark as Shipped</button>
+            </div>` : ''}
+            ${isFarmerView && order.status === 'Shipped' ? `<div class="mt-4 flex space-x-2">
+                <button class="mark-delivered-btn bg-green-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-green-600" data-order-id="${order.id}">Mark as Delivered</button>
+            </div>` : ''}
+        `;
+
+        if (isFarmerView && order.status === 'Pending') {
+            orderItem.querySelector('.mark-shipped-btn').addEventListener('click', () => handleShippedOrder(order.id));
+        }
+        if (isFarmerView && order.status === 'Shipped') {
+            orderItem.querySelector('.mark-delivered-btn').addEventListener('click', () => handleDeliveredOrder(order.id));
+        }
+        
+        container.appendChild(orderItem);
+    });
+};
+
+const showProductModal = (product) => {
+    modalProductName.textContent = product.name;
+    modalProductDescription.textContent = product.description;
+    modalProductPrice.textContent = `RWF ${product.price.toFixed(2)}`;
+    modalProductOwner.textContent = product.ownerId;
+    
+    // Ensure the buy button is functional by re-creating its event listener
+    const newBuyButton = modalBuyButton.cloneNode(true);
+    modalBuyButton.parentNode.replaceChild(newBuyButton, modalBuyButton);
+    newBuyButton.addEventListener('click', () => handleBuyProduct(product));
+
+    productModal.classList.remove('hidden');
+};
+
 // --- Real-time data listeners ---
 
 // Real-time listener for products
@@ -316,30 +460,20 @@ const setupProductListener = () => {
         
         snapshot.docs.forEach(doc => {
             const product = { id: doc.id, ...doc.data() };
-            const productItem = document.createElement('div');
-            productItem.classList.add('bg-white', 'p-4', 'rounded-xl', 'shadow-md', 'mb-4', 'cursor-pointer', 'hover:shadow-lg', 'transition-shadow');
-            productItem.innerHTML = `
-                <h3 class="text-xl font-bold text-gray-800 mb-2">${product.name}</h3>
-                <p class="text-gray-600 mb-2">${product.description}</p>
-                <p class="text-green-600 font-semibold text-lg mb-2">RWF ${product.price.toFixed(2)}</p>
-                <p class="text-sm text-gray-400">Listed by: <span class="font-mono">${product.ownerId}</span></p>
-            `;
-            
-            productItem.addEventListener('click', () => showProductModal(product));
-            productsListBuyer.appendChild(productItem.cloneNode(true));
-            productsListFarmer.appendChild(productItem);
+            renderProduct(product, productsListBuyer);
+            renderProduct(product, productsListFarmer);
         });
     });
 };
 
-// Real-time listener for loan history
+// Real-time listener for loans
 const setupLoanHistoryListener = () => {
     if (!userId) return;
     const loansCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/loan_applications`);
     onSnapshot(loansCollectionRef, (snapshot) => {
         loanHistory.innerHTML = '';
         if (snapshot.empty) {
-            loanHistory.innerHTML = '<p>No loan applications found.</p>';
+            loanHistory.innerHTML = '<p class="text-gray-500">No loan applications found.</p>';
             return;
         }
 
@@ -391,29 +525,32 @@ const setupChatListener = () => {
     });
 };
 
-const showProductModal = (product) => {
-    modalProductName.textContent = product.name;
-    modalProductDescription.textContent = product.description;
-    modalProductPrice.textContent = `RWF ${product.price.toFixed(2)}`;
-    modalProductOwner.textContent = product.ownerId;
-    
-    const newBuyButton = modalBuyButton.cloneNode(true);
-    modalBuyButton.parentNode.replaceChild(newBuyButton, modalBuyButton);
-    newBuyButton.addEventListener('click', () => {
-        showMessage(`You've simulated buying "${product.name}". This feature would typically lead to a checkout process.`);
-        productModal.classList.add('hidden');
+// Real-time listener for buyer's orders
+const setupBuyerOrderListener = () => {
+    if (!userId) return;
+    const ordersCollectionRef = collection(db, `artifacts/${appId}/public/data/orders`);
+    const q = query(ordersCollectionRef, where("buyerId", "==", userId));
+    onSnapshot(q, (snapshot) => {
+        const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderOrders(orders, buyerOrdersList, false);
     });
+};
 
-    productModal.classList.remove('hidden');
+// Real-time listener for farmer's incoming orders
+const setupFarmerOrderListener = () => {
+    if (!userId) return;
+    const ordersCollectionRef = collection(db, `artifacts/${appId}/public/data/orders`);
+    const q = query(ordersCollectionRef, where("farmerId", "==", userId));
+    onSnapshot(q, (snapshot) => {
+        const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderOrders(orders, farmerOrdersList, true);
+    });
 };
 
 // Main authentication state change listener
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        // User is signed in.
         userId = user.uid;
-        
-        // Fetch the user's role from Firestore
         const userProfileRef = doc(db, `artifacts/${appId}/users/${userId}/profile/user_data`);
         const docSnap = await getDoc(userProfileRef);
         
@@ -432,14 +569,14 @@ onAuthStateChanged(auth, async (user) => {
                 buyerDashboard.classList.add('hidden');
                 setupLoanHistoryListener();
                 setupChatListener();
+                setupFarmerOrderListener(); // New listener for farmer's orders
             } else if (currentUserRole === 'buyer') {
                 farmerDashboard.classList.add('hidden');
                 buyerDashboard.classList.remove('hidden');
+                setupBuyerOrderListener(); // New listener for buyer's orders
             }
             setupProductListener(); // Both roles see the product list
         } else {
-            // Case where a user profile does not exist.
-            // This can happen if the user is authenticated with a custom token but hasn't registered yet.
             authStatusEl.textContent = `Status: Authenticated (Profile Incomplete)`;
             logoutButton.classList.remove('hidden');
             loginContainer.classList.add('hidden');
@@ -447,7 +584,6 @@ onAuthStateChanged(auth, async (user) => {
             document.getElementById('welcome-message').textContent = "Welcome! Please register with your role to continue.";
         }
     } else {
-        // User is signed out.
         userId = null;
         currentUserRole = null;
         authStatusEl.textContent = "Status: Not Authenticated";
@@ -467,7 +603,6 @@ const signIn = async () => {
         }
     } catch (error) {
         console.error("Firebase Auth Error:", error);
-        // Handle the error appropriately without an alert
     }
 };
 
