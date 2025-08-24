@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriConnect - Your Digital Agricultural Hub</title>
+    <!-- Tailwind CSS for modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter font from Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+    <!-- Link to our custom styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="flex flex-col min-h-screen font-[Inter]">
+
+    <!-- Main Header -->
+    <header id="main-header" class="bg-green-700 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <!-- AgriConnect Logo -->
+            <div class="flex items-center space-x-2">
+                <div class="logo-container">
+                    <svg class="logo" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C8.68629 2 6 4.68629 6 8C6 9.32483 6.42594 10.5513 7.15174 11.5303L7.90098 12.5117C8.16914 12.854 8.24357 13.3108 8.11893 13.7297C7.9943 14.1486 7.67499 14.4719 7.2798 14.6397L6.44445 15.1111C5.93291 15.3975 5.51864 15.8647 5.25368 16.4243C4.98873 16.9839 4.88764 17.6166 4.95995 18.2505C5.03227 18.8844 5.27552 19.492 5.67138 20.009C6.06724 20.526 6.60334 20.9381 7.22156 21.2185L9.61055 22.2872C10.0539 22.4831 10.5369 22.5855 11.0264 22.5855C11.5159 22.5855 12.0003 22.4842 12.4436 22.2882L15.3941 21.0594C15.8821 20.8497 16.3263 20.5284 16.6917 20.1264C17.0571 19.7244 17.332 19.247 17.4912 18.7303C17.6504 18.2135 17.6908 17.6712 17.6083 17.1352C17.5258 16.5992 17.3235 16.0827 17.0125 15.6264L15.4216 13.2382C15.1953 12.8941 15.1278 12.4578 15.2281 12.0392C15.3283 11.6206 15.5898 11.2721 15.9547 11.0772L17.2017 10.4286C17.4878 10.2801 17.7554 10.1039 17.9943 9.90483C18.2333 9.70578 18.4419 9.48518 18.6133 9.24729C18.7846 9.00941 18.9168 8.75628 19.0051 8.4952C19.0934 8.23412 19.1363 7.96541 19.1325 7.69584C19.1287 7.42627 19.0782 7.15873 18.9829 6.90159C18.8876 6.64445 18.7485 6.39955 18.5714 6.17387C18.3943 5.94819 18.1812 5.74233 17.9392 5.56272C17.6972 5.38312 17.4284 5.23126 17.1437 5.11181C16.8589 4.99236 16.5604 4.90733 16.2533 4.85966L14.7354 4.60679C14.4716 4.56218 14.2057 4.52988 13.9392 4.50978C13.5133 4.47716 13.0858 4.4646 12.6565 4.47214L12 4.47214C8.96243 4.47214 6.47214 6.96243 6.47214 10H17.5279C17.5279 8.68629 16.8906 7.48507 15.8569 6.65775L12.9806 4.29871L12.5939 4.09277L12.2072 3.88684C12.0837 3.81977 11.954 3.75501 11.819 3.69389C11.6841 3.63277 11.5442 3.57531 11.3998 3.52229C11.2554 3.46927 11.1071 3.42084 10.9556 3.37762C10.8041 3.3344 10.6499 3.29651 10.4938 3.26427C10.3378 3.23202 10.1802 3.20583 10.0218 3.18617C9.86337 3.16651 9.70461 3.15343 9.54636 3.14668C9.38811 3.13993 9.23071 3.13955 9.0744 3.14552C8.91809 3.15149 8.76356 3.16377 8.61159 3.18228L7.29289 3.32833C6.98807 3.36832 6.68593 3.4283 6.38827 3.50742C6.09061 3.58654 5.79872 3.68444 5.51347 3.80004C5.22822 3.91564 4.95015 4.0487 4.68233 4.1988C4.41451 4.3489 4.15783 4.51508 3.91338 4.69614C3.66894 4.8772 3.43735 5.07212 3.22019 5.28014C3.00304 5.48816 2.79975 5.70889 2.61113 5.94165C2.42251 6.17441 2.24945 6.41829 2.0931 6.67185C1.93675 6.92541 1.7972 7.18828 1.67565 7.45938C1.5541 7.73048 1.45071 8.00947 1.36625 8.29548C1.2818 8.5815 1.21666 8.87402 1.17187 9.17228C1.12708 9.47053 1.10307 9.77353 1.10087 10.0792L1.09635 11.234C1.09635 11.234 1.09635 11.234 1.09635 11.234Z" fill="white"/>
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold">AgriConnect</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="auth-status" class="text-sm font-light">Status: Not Authenticated</span>
+                <button id="logout-button" class="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-800 transition-colors hidden">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="container mx-auto p-4 flex-grow">
+        <!-- Login and Registration Container -->
+        <div id="login-container" class="max-w-md mx-auto p-8 bg-white rounded-xl shadow-lg mt-10">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Welcome to AgriConnect</h2>
+            <div id="login-form">
+                <p class="text-center text-gray-600 mb-6">Sign in to access your dashboard.</p>
+                <form class="space-y-4">
+                    <div>
+                        <label for="login-email" class="sr-only">Email</label>
+                        <input type="email" id="login-email" name="login-email" placeholder="Email" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                    </div>
+                    <div>
+                        <label for="login-password" class="sr-only">Password</label>
+                        <input type="password" id="login-password" name="login-password" placeholder="Password" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-green-500 text-white font-bold px-4 py-3 rounded-lg hover:bg-green-600 transition-colors">Login</button>
+                </form>
+                <p class="mt-4 text-center text-gray-600">Don't have an account? <a href="#" id="show-register-form" class="text-green-500 hover:text-green-600 font-semibold">Create one</a></p>
+            </div>
+            
+            <div id="register-form" class="hidden">
+                <p class="text-center text-gray-600 mb-6">Create a new account to get started.</p>
+                <form class="space-y-4">
+                    <div>
+                        <label for="register-email" class="sr-only">Email</label>
+                        <input type="email" id="register-email" name="register-email" placeholder="Email" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                    </div>
+                    <div>
+                        <label for="register-password" class="sr-only">Password</label>
+                        <input type="password" id="register-password" name="register-password" placeholder="Password" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                    </div>
+                    <div>
+                        <label for="user-role" class="block text-gray-700 font-semibold mb-1">I am a...</label>
+                        <select id="user-role" name="user-role" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                            <option value="" disabled selected>Select your role</option>
+                            <option value="farmer">Farmer</option>
+                            <option value="buyer">Buyer</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-500 text-white font-bold px-4 py-3 rounded-lg hover:bg-blue-600 transition-colors">Register</button>
+                </form>
+                <p class="mt-4 text-center text-gray-600">Already have an account? <a href="#" id="show-login-form" class="text-blue-500 hover:text-blue-600 font-semibold">Login here</a></p>
+            </div>
+        </div>
+
+        <!-- Main Application Content (Visible after login) -->
+        <div id="main-content" class="hidden">
+            <h2 id="welcome-message" class="text-3xl font-bold text-gray-800 text-center mb-8"></h2>
+            
+            <!-- Buyer Dashboard -->
+            <div id="buyer-dashboard" class="grid grid-cols-1 md:grid-cols-3 gap-8 hidden">
+                <div class="md:col-span-3 bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Fresh Produce for Sale</h3>
+                    <div id="products-list-buyer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Products will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farmer Dashboard -->
+            <div id="farmer-dashboard" class="grid grid-cols-1 md:grid-cols-3 gap-8 hidden">
+                
+                <!-- Farmer-specific features (Listing, Loans, Logistics) -->
+                <div class="md:col-span-1 flex flex-col space-y-8">
+                    <!-- Product Listing -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg h-fit">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">List Your Produce</h3>
+                        <form id="product-form" class="space-y-4">
+                            <div>
+                                <label for="product-name" class="block text-gray-700 font-semibold mb-1">Product Name</label>
+                                <input type="text" id="product-name" name="product-name" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                            </div>
+                            <div>
+                                <label for="product-description" class="block text-gray-700 font-semibold mb-1">Description</label>
+                                <textarea id="product-description" name="product-description" rows="4" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required></textarea>
+                            </div>
+                            <div>
+                                <label for="product-price" class="block text-gray-700 font-semibold mb-1">Price (RWF)</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="number" id="product-price" name="product-price" step="0.01" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                                    <button type="button" id="suggest-price-button" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">Suggest Price</button>
+                                </div>
+                                <div id="price-loading" class="hidden text-sm text-gray-500 mt-2">
+                                    <span class="animate-pulse">Fetching price...</span>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-green-500 text-white font-bold px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">List Product</button>
+                        </form>
+                    </div>
+
+                    <!-- Micro-Loan Application and History -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg flex-1">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Micro-Loan Application</h3>
+                        <form id="micro-loan-form" class="space-y-4">
+                            <div>
+                                <label for="loan-amount" class="block text-gray-700 font-semibold mb-1">Loan Amount (RWF)</label>
+                                <input type="number" id="loan-amount" name="loan-amount" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                            </div>
+                            <div>
+                                <label for="loan-purpose" class="block text-gray-700 font-semibold mb-1">Purpose</label>
+                                <textarea id="loan-purpose" name="loan-purpose" rows="3" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-500 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">Apply for Loan</button>
+                        </form>
+                        <h4 class="text-xl font-bold text-gray-800 mt-6 mb-2">Loan History</h4>
+                        <div id="loan-history" class="space-y-2 text-sm text-gray-600">
+                            <!-- Loan history will be dynamically loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Logistics Request -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg flex-1">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Logistics Request</h3>
+                        <form id="logistics-form" class="space-y-4">
+                            <div>
+                                <label for="pickup-location" class="block text-gray-700 font-semibold mb-1">Pickup Location</label>
+                                <input type="text" id="pickup-location" name="pickup-location" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                            </div>
+                            <div>
+                                <label for="delivery-location" class="block text-gray-700 font-semibold mb-1">Delivery Location</label>
+                                <input type="text" id="delivery-location" name="delivery-location" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                            </div>
+                            <button type="submit" class="w-full bg-purple-500 text-white font-bold px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors">Request Pickup</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Product Display & Community Chat -->
+                <div class="md:col-span-2 flex flex-col space-y-8">
+                    <!-- Product Display -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg h-fit">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Market Overview</h3>
+                        <div id="products-list-farmer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Products will be dynamically added here -->
+                        </div>
+                    </div>
+
+                    <!-- Community Chat -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg flex-1 flex flex-col">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Community Chat</h3>
+                        <div id="chat-messages" class="flex-1 overflow-y-auto space-y-4 p-4 border rounded-lg bg-gray-50 mb-4">
+                            <!-- Chat messages will be dynamically added here -->
+                        </div>
+                        <form id="chat-form" class="flex">
+                            <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-600 transition-colors">Send</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals and Popups -->
+    <div id="product-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative p-8 border w-full md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <button id="close-product-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
+            <h3 id="modal-product-name" class="text-3xl font-bold text-gray-800 mb-2">Product Name</h3>
+            <p id="modal-product-description" class="text-gray-600 mb-4"></p>
+            <p class="text-green-600 font-bold text-2xl mb-4">Price: <span id="modal-product-price">RWF 0.00</span></p>
+            <p class="text-sm text-gray-500 mb-4">Listed by: <span id="modal-product-owner"></span></p>
+            <button id="modal-buy-button" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors w-full">Simulate Purchase</button>
+        </div>
+    </div>
+    <div id="message-box" class="hidden fixed bottom-4 right-4 bg-gray-800 text-white p-4 rounded-lg shadow-xl max-w-sm z-50">
+        <p id="message-text"></p>
+        <button id="message-close" class="absolute top-1 right-2 text-white hover:text-gray-400">&times;</button>
+    </div>
+    <div id="confirmation-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Registration Successful!</h3>
+            <p class="text-gray-600 mb-4">An email has been sent to your address with your confirmation details.</p>
+            <div class="flex justify-end items-center mt-4">
+                <button id="close-modal-button" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center p-4 mt-8">
+        <p>&copy; 2025 AgriConnect. All rights reserved.</p>
+    </footer>
+
+    <!-- Link to our application logic -->
+    <script type="module" src="main.js"></script>
+</body>
+</html>
