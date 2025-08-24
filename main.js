@@ -59,6 +59,8 @@ const modalProductName = document.getElementById('modal-product-name');
 const modalProductDescription = document.getElementById('modal-product-description');
 const modalProductPrice = document.getElementById('modal-product-price');
 const modalProductOwner = document.getElementById('modal-product-owner');
+const modalProductLocation = document.getElementById('modal-product-location');
+const modalProductPhone = document.getElementById('modal-product-phone');
 const modalBuyButton = document.getElementById('modal-buy-button');
 const chatMessages = document.getElementById('chat-messages');
 const chatForm = document.getElementById('chat-form');
@@ -66,6 +68,7 @@ const chatInput = document.getElementById('chat-input');
 const loanHistory = document.getElementById('loan-history');
 const buyerOrdersList = document.getElementById('buyer-orders-list');
 const farmerOrdersList = document.getElementById('farmer-orders-list');
+const productSearchInput = document.getElementById('product-search');
 
 // A simple utility for exponential backoff retry.
 const withRetry = async (fn, retries = 5, delay = 1000) => {
@@ -133,7 +136,7 @@ registerForm.addEventListener('submit', async (e) => {
         const userProfileRef = doc(db, `artifacts/${appId}/users/${newUserId}/profile/user_data`);
         await setDoc(userProfileRef, { email, role, createdAt: new Date().toISOString() });
         
-        showMessage("Registration successful! You can now log in.");
+        showMessage("Registration successful! A confirmation email has been simulated.");
         confirmationModal.classList.remove('hidden');
         registerForm.reset();
         loginForm.classList.remove('hidden');
@@ -159,14 +162,20 @@ productForm.addEventListener('submit', async (e) => {
     }
 
     const productName = document.getElementById('product-name').value;
-    const productPrice = document.getElementById('product-price').value;
+    const productType = document.getElementById('product-type').value;
+    const productLocation = document.getElementById('product-location').value;
+    const productPhone = document.getElementById('product-phone').value;
     const productDescription = document.getElementById('product-description').value;
+    const productPrice = document.getElementById('product-price').value;
 
     try {
         const productsCollectionRef = collection(db, `artifacts/${appId}/public/data/products`);
         await addDoc(productsCollectionRef, {
             ownerId: userId,
             name: productName,
+            type: productType,
+            location: productLocation,
+            phone: productPhone,
             price: parseFloat(productPrice),
             description: productDescription,
             createdAt: new Date().toISOString(),
@@ -374,7 +383,11 @@ const renderProduct = (product, container, isFarmer) => {
         <h3 class="text-xl font-bold text-gray-800 mb-2">${product.name}</h3>
         <p class="text-gray-600 mb-2">${product.description}</p>
         <p class="text-green-600 font-semibold text-lg mb-2">RWF ${product.price.toFixed(2)}</p>
-        <p class="text-sm text-gray-400">Listed by: <span class="font-mono">${product.ownerId}</span></p>
+        <p class="text-sm text-gray-400">
+            Listed by: <span class="font-mono">${product.ownerId}</span>
+            <br>
+            Location: <span class="font-bold">${product.location}</span>
+        </p>
     `;
     
     productItem.addEventListener('click', () => showProductModal(product));
@@ -440,6 +453,8 @@ const showProductModal = (product) => {
     modalProductDescription.textContent = product.description;
     modalProductPrice.textContent = `RWF ${product.price.toFixed(2)}`;
     modalProductOwner.textContent = product.ownerId;
+    modalProductLocation.textContent = product.location;
+    modalProductPhone.textContent = product.phone;
     
     // Ensure the buy button is functional by re-creating its event listener
     const newBuyButton = modalBuyButton.cloneNode(true);
@@ -455,16 +470,45 @@ const showProductModal = (product) => {
 const setupProductListener = () => {
     const productsCollectionRef = collection(db, `artifacts/${appId}/public/data/products`);
     onSnapshot(productsCollectionRef, (snapshot) => {
-        productsListBuyer.innerHTML = '';
-        productsListFarmer.innerHTML = '';
+        const allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // Store all products to be used for search filtering
+        productsListBuyer.products = allProducts;
+        productsListFarmer.products = allProducts;
         
-        snapshot.docs.forEach(doc => {
-            const product = { id: doc.id, ...doc.data() };
-            renderProduct(product, productsListBuyer);
-            renderProduct(product, productsListFarmer);
-        });
+        // Initial render of all products
+        renderFilteredProducts('');
     });
 };
+
+const renderFilteredProducts = (query) => {
+    const lowerCaseQuery = query.toLowerCase();
+    
+    // Filter products based on the search query
+    const filteredProductsBuyer = productsListBuyer.products.filter(p => 
+        p.name.toLowerCase().includes(lowerCaseQuery) ||
+        p.ownerId.toLowerCase().includes(lowerCaseQuery) ||
+        p.location.toLowerCase().includes(lowerCaseQuery)
+    );
+
+    const filteredProductsFarmer = productsListFarmer.products.filter(p => 
+        p.name.toLowerCase().includes(lowerCaseQuery) ||
+        p.ownerId.toLowerCase().includes(lowerCaseQuery) ||
+        p.location.toLowerCase().includes(lowerCaseQuery)
+    );
+
+    productsListBuyer.innerHTML = '';
+    filteredProductsBuyer.forEach(p => renderProduct(p, productsListBuyer));
+
+    productsListFarmer.innerHTML = '';
+    filteredProductsFarmer.forEach(p => renderProduct(p, productsListFarmer));
+};
+
+// Event listener for the buyer's search input
+productSearchInput.addEventListener('input', (e) => {
+    renderFilteredProducts(e.target.value);
+});
+
 
 // Real-time listener for loans
 const setupLoanHistoryListener = () => {
