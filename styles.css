@@ -1,0 +1,65 @@
+/* Custom styles for the AgriConnect platform */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6; /* A clean, light gray background */
+}
+
+/* Custom scrollbar for better aesthetics */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* A subtle animation for the loading text */
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .5; }
+}
+
+/* Styles for the chat messages */
+.chat-message-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.chat-message {
+    padding: 8px 12px;
+    border-radius: 16px;
+    max-width: 75%;
+}
+.chat-message.self {
+    background-color: #d1e7dd; /* Light green for self messages */
+    align-self: flex-end;
+}
+.chat-message.other {
+    background-color: #e2e8f0; /* Light gray for other messages */
+    align-self: flex-start;
+}
+.chat-message-meta {
+    font-size: 0.75rem; /* text-xs */
+    color: #4b5563; /* text-gray-600 */
+    margin-top: 4px;
+}
+
+/* Logo specific styling to ensure it's centered and looks good */
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.logo {
+    fill: #ffffff; /* Sets the SVG color to white */
+}
