@@ -63,3 +63,32 @@ body {
 .logo {
     fill: #ffffff; /* Sets the SVG color to white */
 }
+
+/* Styles for order status badges */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background-color: #fcd34d; /* yellow-300 */
+    color: #b45309; /* yellow-800 */
+}
+
+.status-confirmed {
+    background-color: #93c5fd; /* blue-300 */
+    color: #1e40af; /* blue-800 */
+}
+
+.status-shipped {
+    background-color: #a7f3d0; /* emerald-200 */
+    color: #065f46; /* emerald-900 */
+}
+
+.status-delivered {
+    background-color: #d1fae5; /* green-100 */
+    color: #065f46; /* green-900 */
+}
